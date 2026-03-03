@@ -19,6 +19,8 @@ jobs:
     name: Build & Push Backend
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
+    outputs:
+      backend_changed: ${{ steps.changes.outputs.backend }}
 
     steps:
       - name: Checkout code
@@ -56,6 +58,8 @@ jobs:
     name: Build & Push Frontend
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
+    outputs:
+      frontend_changed: ${{ steps.changes.outputs.frontend }}
 
     steps:
       - name: Checkout code
@@ -122,6 +126,7 @@ jobs:
         continue-on-error: true
 
       - name: Deploy Backend
+        if: needs.build-backend.outputs.backend_changed == 'true'
         run: |
           kubectl apply -f devops/k8s/backend-deployment.yaml
           kubectl set image deployment/backend-deployment \
@@ -129,6 +134,7 @@ jobs:
             -n backend
 
       - name: Deploy Frontend
+        if: needs.build-frontend.outputs.frontend_changed == 'true'
         run: |
           kubectl apply -f devops/k8s/frontend-deployment.yaml
           kubectl set image deployment/frontend-deployment \
@@ -138,9 +144,17 @@ jobs:
       - name: Verify Deployment
         run: |
           echo "=== Checking Backend ==="
-          kubectl rollout status deployment/backend-deployment -n backend --timeout=120s
+          if [ "${{ needs.build-backend.outputs.backend_changed }}" == "true" ]; then
+            kubectl rollout status deployment/backend-deployment -n backend --timeout=120s
+          else
+            echo "Backend unchanged. Skipping rollout wait."
+          fi
           echo "=== Checking Frontend ==="
-          kubectl rollout status deployment/frontend-deployment -n frontend --timeout=120s
+          if [ "${{ needs.build-frontend.outputs.frontend_changed }}" == "true" ]; then
+            kubectl rollout status deployment/frontend-deployment -n frontend --timeout=120s
+          else
+            echo "Frontend unchanged. Skipping rollout wait."
+          fi
           echo "=== All Pods ==="
           kubectl get pods -A
           echo "=== Services ==="
