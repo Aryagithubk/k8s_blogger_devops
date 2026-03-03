@@ -19,7 +19,7 @@ export default function Navbar() {
             <div className="navbar-container">
                 <Link to="/" className="navbar-brand" onClick={() => setMenuOpen(false)}>
                     <FiPenTool className="brand-icon" />
-                    <span>Blogger</span>
+                    <span>Blogger <small style={{ fontSize: '0.5em', color: '#4ade80' }}>v2.0 Via EKS CI/CD</small></span>
                 </Link>
 
                 <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
