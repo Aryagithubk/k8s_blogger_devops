@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: YOUR_DOCKERHUB_USERNAME/bloggerapp-frontend:latest
+          image: aryasingh55/bloggerapp-frontend:latest
           ports:
             - containerPort: 80
           resources:
