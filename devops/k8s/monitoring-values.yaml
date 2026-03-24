@@ -1,16 +1,5 @@
-# Custom Helm values for kube-prometheus-stack
-# Install with:
-#   helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-#   helm repo update
-#   helm install monitoring prometheus-community/kube-prometheus-stack \
-#     --namespace monitoring \
-#     --create-namespace \
-#     -f monitoring-values.yaml
-
-# --- Prometheus ---
 prometheus:
   prometheusSpec:
-    # Resource limits tuned for t3.medium
     resources:
       requests:
         cpu: "200m"
@@ -27,10 +16,16 @@ prometheus:
 grafana:
   enabled: true
   adminUser: admin
-  adminPassword: admin  # CHANGE THIS in production!
+  adminPassword: admin 
   service:
-    type: LoadBalancer
-    port: 3000
+    type: ClusterIP
+    port: 80
+    targetPort: 3000
+  grafana.ini:
+    server:
+      domain: localhost
+      root_url: "%(protocol)s://%(domain)s/grafana"
+      serve_from_sub_path: true
   resources:
     requests:
       cpu: "100m"
@@ -39,7 +34,6 @@ grafana:
       cpu: "300m"
       memory: "256Mi"
 
-  # Pre-loaded dashboards
   dashboardProviders:
     dashboardproviders.yaml:
       apiVersion: 1

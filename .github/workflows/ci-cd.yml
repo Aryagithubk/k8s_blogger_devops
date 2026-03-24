@@ -12,9 +12,9 @@ env:
   AWS_REGION: ap-south-1
 
 jobs:
-  # -----------------------------------------------
+ 
   # Build & Push Backend Image
-  # -----------------------------------------------
+ 
   build-backend:
     name: Build & Push Backend
     runs-on: ubuntu-latest
@@ -51,9 +51,9 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/bloggerapp-backend:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/bloggerapp-backend:${{ github.sha }}
 
-  # -----------------------------------------------
+ 
   # Build & Push Frontend Image
-  # -----------------------------------------------
+ 
   build-frontend:
     name: Build & Push Frontend
     runs-on: ubuntu-latest
@@ -92,9 +92,9 @@ jobs:
           build-args: |
             VITE_API_URL=/api
 
-  # -----------------------------------------------
+  
   # Deploy to EKS
-  # -----------------------------------------------
+  
   deploy:
     name: Deploy to EKS
     runs-on: ubuntu-latest
